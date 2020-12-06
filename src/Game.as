@@ -141,6 +141,7 @@ package
 			}
 			
 			PlayerEat();
+			EnemyEat();
 		}
 		
 		
@@ -197,14 +198,18 @@ package
 			{
 				for (var j : int = 0; j < enemyAr.length; j++)
 				{
-					// method enemy eat other enemy, where enemy level equal or lower than other enemy
-					if (enemyAr[i].bounds.intersects(player.bounds) == true && enemyAr[i].level <= enemyAr[j].level)
+					// method enemy eat other enemy, 
+					// where enemy level equal or lower than other enemy
+					// level 1 can't eat other level 1 enemy
+					if (enemyAr[j].bounds.intersects(enemyAr[i].bounds) == true
+						&& enemyAr[i].level <= enemyAr[j].level
+					)
 					{
 						enemyAr[i].active = false;
 						
 						if (enemyAr[i].active == false)
 						{
-							enemyAr[i].EnemyEatCount += 1;
+							enemyAr[i].EnemyEatCount++;
 						}
 						
 						// add experience player level up
@@ -219,6 +224,7 @@ package
 							enemyAr[i].level = 2;
 							enemyAr[i].color = Color.WHITE;
 						}
+						
 					}
 					
 				}
