@@ -31,7 +31,7 @@ package
 		private var movePlayer : Boolean = false;
 		
 		private var enemyArColor : Array = [Color.RED, Color.GREEN, Color.WHITE];
-		//private var score : TextField;
+		private var score : TextField;
 		
 		public function Game() 
 		{
@@ -61,16 +61,15 @@ package
 			player.speed = 5;
 			addChild(player);
 			
-			//var ScoreBackground : Quad = new Quad(150, 60, Color.WHITE);
-			//ScoreBackground.x = 20;
-			//ScoreBackground.y = 20;
-			//addChild(ScoreBackground);
-			//
-			//score = new TextField(150, 50);
-			//score.x = 10;
-			//score.y = 10;
-			//score.text = "Score: 0";
-			//addChild(score);
+			var ScoreBackground : Quad = new Quad(150, 60, Color.WHITE);
+			ScoreBackground.x = 20;
+			addChild(ScoreBackground);
+			
+			score = new TextField(150, 50);
+			score.x = 10;
+			score.y = 10;
+			score.text = "Score: 0";
+			addChild(score);
 			
 			this.addEventListener(EnterFrameEvent.ENTER_FRAME, enterFrame);
 			this.addEventListener(TouchEvent.TOUCH, touchGame);
@@ -156,60 +155,75 @@ package
 					
 					if (enemyAr[i].active == false)
 					{
-						PlayerEatCount = (enemyAr.length - 10) + 1;
+						PlayerEatCount++;
 					}
 					
 					// add experience player level up once every eat 3 enemy
 					// Player level 2 => Color.PURPLE;
 					// Player level 3 => Color.AQUA;
-					if (PlayerEatCount == 3){
-						player.level = 2;
-						player.color = Color.PURPLE;
-					}
-					else if (PlayerEatCount == 6){
+					if (PlayerEatCount > 50){
 						player.level = 3;
 						player.color = Color.AQUA;
 					}
+					else if (PlayerEatCount > 30){
+						player.level = 2;
+						player.color = Color.PURPLE;
+					}
 					
-					//score.text = "Score :"+ PlayerEatCount;
-					//addChild(score);
+					score.text = "Score :" + PlayerEatCount;
+					addChild(score);
 				}
-				//else {
-					//this.stage.starling.stop();
-				//}
+				
+				// game over if player eat enemy level greater than player level
+				if (enemyAr[i].bounds.intersects(player.bounds) == true && enemyAr[i].level > player.level)
+				{
+					this.stage.starling.stop();
+					var GameOverBackground : Quad = new Quad(180, 60, Color.WHITE);
+					GameOverBackground.x = 430;
+					addChild(GameOverBackground);
+					
+					var GameOverText : TextField = new TextField(150, 50);
+					GameOverText.x = 450;
+					GameOverText.y = 10;
+					GameOverText.text = "GAME OVER";
+					addChild(GameOverText);
+				}
 			}
 		}
 		
-		//private function EnemyEat():void
-		//{
-			//for (var i : int = 0; i < 10; i++)
-			//{
-				//for (var j : int = 0; j < 10; j++)
-				//{
-					//// method player eat enemy, where enemy level equal or lower than other enemy
-					//if (enemyAr[i].bounds.intersects(player.bounds) == true && enemyAr[i].level =< player.level)
-					//{
-						//enemyAr[i].active = false;
-						//
-						//enemyAr[i].EnemyEatCount++;
-						//
-						//// add experience player level up
-						//// PlayerEatCount count multiples of 3
-						//// Player level 2 => Color.GREEN;
-						//// Player level 3 => Color.WHITE;
-						//if (EnemyEatCount == 3){
-							//enemyAr[i].level = 2;
-							//enemyAr[i].color = Color.PURPLE;
-						//}
-						//else if (EnemyEatCount == 6){
-							//enemyAr[i].level = 3;
-							//enemyAr[i].color = Color.AQUA;
-						//}
-						//
-					//}
-				//}
-			//}
-		//}
+		private function EnemyEat():void
+		{
+			for (var i : int = 0; i < enemyAr.length; i++)
+			{
+				for (var j : int = 0; j < enemyAr.length; j++)
+				{
+					// method enemy eat other enemy, where enemy level equal or lower than other enemy
+					if (enemyAr[i].bounds.intersects(player.bounds) == true && enemyAr[i].level <= enemyAr[j].level)
+					{
+						enemyAr[i].active = false;
+						
+						if (enemyAr[i].active == false)
+						{
+							enemyAr[i].EnemyEatCount += 1;
+						}
+						
+						// add experience player level up
+						// PlayerEatCount count multiples of 3
+						// Enemy level 2 => Color.GREEN;
+						// Enemy level 3 => Color.WHITE;
+						if (enemyAr[i].EnemyEatCount > 50){
+							enemyAr[i].level = 3;
+							enemyAr[i].color = Color.GREEN;
+						}
+						else if (enemyAr[i].EnemyEatCount > 30){
+							enemyAr[i].level = 2;
+							enemyAr[i].color = Color.WHITE;
+						}
+					}
+					
+				}
+			}
+		}
 		
 		private function spawnEnemy():void 
 		{
