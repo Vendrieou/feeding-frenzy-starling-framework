@@ -7,6 +7,8 @@ package
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.utils.Color;
+	import starling.text.TextField;
+	
 	/**
 	 * ...
 	 * @author Vendrie
@@ -18,6 +20,7 @@ package
 		private var timer : int = 100;
 		
 		private var maxSpeed : int = 5;
+		private var PlayerEatCount : int = 0;
 		
 		private var player: Player;
 		private var background : Quad;
@@ -27,6 +30,7 @@ package
 		private var movePlayer : Boolean = false;
 		
 		private var enemyArColor : Array = [Color.RED, Color.GREEN, Color.WHITE];
+		private var score : TextField;
 		
 		public function Game() 
 		{
@@ -55,6 +59,16 @@ package
 			player.level = 1;
 			player.speed = 5;
 			addChild(player);
+			
+			var ScoreBackground : Quad = new Quad(150, 60, Color.WHITE);
+			ScoreBackground.x = 20;
+			addChild(ScoreBackground);
+			
+			score = new TextField(150, 50);
+			score.x = 10;
+			score.y = 10;
+			score.text = "Score: 0";
+			addChild(score);
 			
 			this.addEventListener(EnterFrameEvent.ENTER_FRAME, enterFrame);
 			this.addEventListener(TouchEvent.TOUCH, touchGame);
@@ -123,6 +137,109 @@ package
 				
 				player.x += xstep;
 				player.y += ystep;
+			}
+			
+			PlayerEat();
+			EnemyEat();
+		}
+		
+		
+		private function PlayerEat():void
+		{
+			for (var i : int = 0; i < enemyAr.length; i++)
+			{
+				// method player eat enemy, where enemy level equal or lower than player
+				if (enemyAr[i].bounds.intersects(player.bounds) == true && enemyAr[i].level <= player.level)
+				{
+					enemyAr[i].active = false;
+					
+					if (enemyAr[i].active == false)
+					{
+						PlayerEatCount++;
+					}
+					
+					// add experience player level up once every eat 3 enemy
+					// Player level 2 => Color.PURPLE;
+					// Player level 3 => Color.AQUA;
+					if (PlayerEatCount > 50){
+						player.level = 3;
+						player.color = Color.AQUA;
+					}
+					else if (PlayerEatCount > 30){
+						player.level = 2;
+						player.color = Color.PURPLE;
+					}
+					
+					score.text = "Score :" + PlayerEatCount;
+					addChild(score);
+				}
+							
+				// game over if player eat enemy level greater than player level
+				if (enemyAr[i].bounds.intersects(player.bounds) == true && enemyAr[i].level > player.level)
+				{
+					this.stage.starling.stop();
+					var GameOverBackground : Quad = new Quad(180, 60, Color.WHITE);
+					GameOverBackground.x = 430;
+					addChild(GameOverBackground);
+					
+					var GameOverText : TextField = new TextField(150, 50);
+					GameOverText.x = 450;
+					GameOverText.y = 10;
+					GameOverText.text = "GAME OVER";
+					addChild(GameOverText);
+				}
+			}
+		
+		}
+		
+		private function EnemyEat():void
+		{
+			for (var i : int = 0; i < enemyAr.length; i++)
+			{
+				for (var j : int = 0; j < enemyAr.length; j++)
+				{
+					// Method for enemy eat other enemy, 
+					// where enemy level lower than other enemy.
+					// Level 1 can't eat other level 1 enemy
+					if (enemyAr[i].bounds.intersects(enemyAr[j].bounds) == true
+						&& enemyAr[i].level < enemyAr[j].level
+					)
+					{
+						enemyAr[i].active = false;
+
+						if (enemyAr[i].active == false)
+						{
+							enemyAr[i].EnemyEatCount++;
+						}
+						
+						// add experience player level up
+						// PlayerEatCount count multiples of 3
+						// Enemy level 2 => Color.GREEN;
+						// Enemy level 3 => Color.WHITE;
+						if (enemyAr[i].EnemyEatCount > 3){
+							// increase the level enemy with a larger level,
+							// when an enemy with a larger level 
+							// eats a smaller level enemy for 3 times
+							enemyAr[j].level = 3;
+							enemyAr[j].color = Color.WHITE;
+						}
+						
+						
+						// debug log for Enemy is intersect
+						//this.stage.starling.stop();
+						//var EnemyBackground : Quad = new Quad(180, 60, Color.WHITE);
+						//EnemyBackground.x = 430;
+						//addChild(EnemyBackground);
+						//
+						//var EnemyText : TextField = new TextField(150, 50);
+						//EnemyText.x = 450;
+						//EnemyText.y = 10;
+						//EnemyText.text = "Enemy Intersect";
+						//addChild(EnemyText);
+						
+					}
+					
+				}
 			}
 		}
 		

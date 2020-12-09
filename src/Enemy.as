@@ -15,6 +15,7 @@ package
 		public var insideStage : Boolean = false;
 		
 		public var level : int;
+		public var EnemyEatCount : int;
 		
 		public function Enemy(width:Number, height:Number, color:uint=0xffffff) 
 		{
