@@ -21,7 +21,6 @@ package
 		
 		private var maxSpeed : int = 5;
 		private var PlayerEatCount : int = 0;
-		// private var EnemyEatCount : int = 0;
 		
 		private var player: Player;
 		private var background : Quad;
@@ -174,7 +173,7 @@ package
 					score.text = "Score :" + PlayerEatCount;
 					addChild(score);
 				}
-				
+							
 				// game over if player eat enemy level greater than player level
 				if (enemyAr[i].bounds.intersects(player.bounds) == true && enemyAr[i].level > player.level)
 				{
@@ -190,6 +189,7 @@ package
 					addChild(GameOverText);
 				}
 			}
+		
 		}
 		
 		private function EnemyEat():void
@@ -198,15 +198,15 @@ package
 			{
 				for (var j : int = 0; j < enemyAr.length; j++)
 				{
-					// method enemy eat other enemy, 
-					// where enemy level equal or lower than other enemy
-					// level 1 can't eat other level 1 enemy
-					if (enemyAr[j].bounds.intersects(enemyAr[i].bounds) == true
-						&& enemyAr[i].level <= enemyAr[j].level
+					// Method for enemy eat other enemy, 
+					// where enemy level lower than other enemy.
+					// Level 1 can't eat other level 1 enemy
+					if (enemyAr[i].bounds.intersects(enemyAr[j].bounds) == true
+						&& enemyAr[i].level < enemyAr[j].level
 					)
 					{
 						enemyAr[i].active = false;
-						
+
 						if (enemyAr[i].active == false)
 						{
 							enemyAr[i].EnemyEatCount++;
@@ -216,14 +216,26 @@ package
 						// PlayerEatCount count multiples of 3
 						// Enemy level 2 => Color.GREEN;
 						// Enemy level 3 => Color.WHITE;
-						if (enemyAr[i].EnemyEatCount > 50){
-							enemyAr[i].level = 3;
-							enemyAr[i].color = Color.GREEN;
+						if (enemyAr[i].EnemyEatCount > 3){
+							// increase the level enemy with a larger level,
+							// when an enemy with a larger level 
+							// eats a smaller level enemy for 3 times
+							enemyAr[j].level = 3;
+							enemyAr[j].color = Color.WHITE;
 						}
-						else if (enemyAr[i].EnemyEatCount > 30){
-							enemyAr[i].level = 2;
-							enemyAr[i].color = Color.WHITE;
-						}
+						
+						
+						// debug log for Enemy is intersect
+						//this.stage.starling.stop();
+						//var EnemyBackground : Quad = new Quad(180, 60, Color.WHITE);
+						//EnemyBackground.x = 430;
+						//addChild(EnemyBackground);
+						//
+						//var EnemyText : TextField = new TextField(150, 50);
+						//EnemyText.x = 450;
+						//EnemyText.y = 10;
+						//EnemyText.text = "Enemy Intersect";
+						//addChild(EnemyText);
 						
 					}
 					
